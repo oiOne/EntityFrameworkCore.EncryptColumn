@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
 using System.Text;
 using EntityFrameworkCore.EncryptColumn.Interfaces;
@@ -62,7 +63,9 @@ namespace EntityFrameworkCore.EncryptColumn.Util
 				aes.Key = Encoding.UTF8.GetBytes(key);
 				aes.IV = iv;
 				ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-
+				var isBase64Valid = dataToDecrypt.IsBase64String();
+				if (!isBase64Valid)
+					return dataToDecrypt;
 				var buffer = Convert.FromBase64String(dataToDecrypt);
 				using(MemoryStream memoryStream = new MemoryStream(buffer))
 					{
